@@ -1,0 +1,4 @@
+ReviewID,Score,UserID,ApartmentID,HouseID
+5,1,3,1,NULL
+6,3,2,NULL,1
+7,3,2,NULL,1

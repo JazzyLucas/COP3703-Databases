@@ -1,0 +1,6 @@
+UserID,FirstName,LastName,PhoneNumber,Email,City,State,Zip,StreetAddress,password,isAdmin
+1,JOHN,DOE,9044444411,JohnDoe@gmail.com,Jacksonville,FL,32223,"5533 main street",passme,1
+2,James,Bond,9044444555,jamesbond@gmail.com,Jacksonville,FL,16666,"4433 street",NULL,NULL
+3,Sandi,Wilma,9044011324,SandiWilma@gmail.com,tampa,FL,35815,"250 Hartford Avenue, Bellingham",NULL,NULL
+4,"Luella ",Aide,9044011648,LuellaAide@gmail.com,Orlando,FL,43214,"700 Oak Street, Brockton",NULL,NULL
+5,"Vannesa  ",Maya,9044011972,AnnisGiovanni@gmail.com,NYC,NY,65321,"591 Memorial Dr, Chicopee",NULL,NULL

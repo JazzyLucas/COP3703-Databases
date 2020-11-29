@@ -1,0 +1,3 @@
+LocationID,LocationName,StreetAddress,Zip,City,State,Neighborhood,CharacteristicsID
+1,"Beachwood Apartments","5544 parkway Dr",32246,Jacksonville,FL,southside,1
+2,"The edge at towncenter","3544 St Johns BLuff Rd",32224,Jacksonville,FL,southside,1
