@@ -1386,7 +1386,13 @@ class UserInterface extends JFrame implements ActionListener {
         
         if (s.equals("Search")) {
         	try {
-            	resultStrings = Database.Search(Integer.parseInt(bedroomsField.getText()), Integer.parseInt(bathroomsField.getText()), Float.parseFloat(priceField.getText()), 0);
+        		int houseOrApartment = 0;
+        		if (houseTypeRadio.isSelected()) {
+        			houseOrApartment = 1;
+        		} else {
+        			houseOrApartment = 0;
+        		}
+            	resultStrings = Database.Search(Integer.parseInt(bedroomsField.getText()), Integer.parseInt(bathroomsField.getText()), Float.parseFloat(priceField.getText()), houseOrApartment);
 			} catch (Exception e2) {
 				System.out.println("Search failed");
 			}
