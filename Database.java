@@ -5,15 +5,25 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Databases class for managing the backend.
+ * 
+ * @author Noah Linton, Ahmad Osmani
+ * (Modified by JazzyLucas)
+ */
 
 public class Database {
 
-    public static String URL = "jdbc:mysql://localhost:3306/mydb";
-    public static String username = "root";
-    public static String password = "Osmani1377"; //password
+    public static String URL = "jdbc:mysql://cisvm-winsrv-mysql1.unfcsd.unf.edu:3306/group6";
+    public static String username = "n01421210";
+    public static String password = "Fall20201210"; //password
+    
+    // Added a global boolean for working with the project locally.
+    // Changes were made accordingly. ~Lucas
+    public static boolean isOffline = false;
+    public static int demoInt = 0;
 
-    public static void main(String[] args) throws Exception {
-        
+    public static void main(String[] args) throws Exception {    
     }
 
     //Start of user functions
@@ -23,6 +33,9 @@ public class Database {
      * when they create/request a new lease
      */
     public static boolean Login(String userlogin, String userPassword) throws Exception {
+    	if (isOffline) {
+    		return true;
+    	}
         String userEmailGUI = "";
         userEmailGUI = userEmailGUI.concat("\"" + userlogin + "\"");
         String loginQuery = "select user.Email, user.password, user.isAdmin from user where user.Email = ";
@@ -39,18 +52,14 @@ public class Database {
             myarray.add(result.getString("password"));
             myarray.add(result.getString("isAdmin"));
         }
-
         try {
             if (userlogin.equals(myarray.get(0)) && userPassword.equals(myarray.get(1))) {
                 System.out.println("login successful");
                 System.out.println(myarray.get(2));
                 return true;
             }
-
         } catch (Exception e) {
-            System.out.print("");
         }
-
         st.close();
         con.close();
         return false;
@@ -58,8 +67,10 @@ public class Database {
 
     //registers a new user
     public static void Registration(ArrayList<String> userInfo) throws Exception {
-
-        String addUser = "INSERT INTO `mydb`.`user` (`FirstName`, `LastName`, `PhoneNumber`, `Email`, `City`, `State`, `Zip`, `StreetAddress`, `password`) VALUES ("
+    	if (isOffline) {
+    		return;
+    	}
+        String addUser = "INSERT INTO `group6`.`user` (`FirstName`, `LastName`, `PhoneNumber`, `Email`, `City`, `State`, `Zip`, `StreetAddress`, `password`) VALUES ("
                 + "\"" + userInfo.get(0) + "\", " + "\"" + userInfo.get(1) + "\", " + "\"" + userInfo.get(2) + "\", " + "\"" + userInfo.get(3) + "\", " + "\"" + userInfo.get(4) +
                 "\", " + "\"" + userInfo.get(5) + "\", " + "\"" + userInfo.get(6) + "\", " + "\"" + userInfo.get(7) + "\", " + "\"" + userInfo.get(8) + "\")";
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -76,6 +87,16 @@ public class Database {
 //     * as listed above
 //     */
     public static ArrayList<String> Search(int numbedrooms, int numbathrooms, double maxPrice, int houseType) throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<String>();
+    		offlineResult.add("000001");
+    		offlineResult.add("000002");
+    		offlineResult.add("000003");
+    		offlineResult.add("000004");
+    		offlineResult.add("000005");
+    		offlineResult.add("000006");
+    		return offlineResult;
+    	}
         //show all listing if nothing is selected
         String query = "";
         boolean flag = false;
@@ -149,7 +170,6 @@ public class Database {
         if (houseType == 0) {
             while (result.next() != false) {
                 myarray.add(result.getString("ApartmentID"));
-
             }
         } else if (houseType == 1) {
             while (result.next() != false) {
@@ -159,11 +179,35 @@ public class Database {
         st.close();
         con.close();
         return myarray;
-
-
     }
-
+    
     public static ArrayList<String> propertyDetails(int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+    		demoInt++;
+    		switch (demoInt) {
+			case 1:
+				offlineResult.add("000001");offlineResult.add("Beachwood Apartments");offlineResult.add("5");offlineResult.add("2");offlineResult.add("3");offlineResult.add("2");offlineResult.add("1200.00");offlineResult.add("All");
+				break;
+			case 2:
+				offlineResult.add("000002");offlineResult.add("Beachwood Apartments");offlineResult.add("3");offlineResult.add("6");offlineResult.add("3");offlineResult.add("1");offlineResult.add("1200.00");offlineResult.add("All");
+				break;
+			case 3:
+	    		offlineResult.add("000003");offlineResult.add("Beachwood Apartments");offlineResult.add("12");offlineResult.add("2");offlineResult.add("2");offlineResult.add("1");offlineResult.add("1200.00");offlineResult.add("All");
+				break;
+			case 4:
+				offlineResult.add("000004");offlineResult.add("Beachwood Apartments");offlineResult.add("11");offlineResult.add("1");offlineResult.add("3");offlineResult.add("1");offlineResult.add("1200.00");offlineResult.add("All");
+				break;
+			case 5:
+				offlineResult.add("000005");offlineResult.add("Beachwood Apartments");offlineResult.add("2");offlineResult.add("8");offlineResult.add("2");offlineResult.add("1");offlineResult.add("1200.00");offlineResult.add("All");
+				break;
+			case 6:
+	    		offlineResult.add("000006"); offlineResult.add("Beachwood Apartments"); offlineResult.add("7"); offlineResult.add("8"); offlineResult.add("3"); offlineResult.add("2"); offlineResult.add("1200.00"); offlineResult.add("All");
+				demoInt = 0;
+	    		break;
+    		}
+    		return offlineResult;
+    	}
         String query = "";
         ArrayList<String> pDetails = new ArrayList<>();
         if (apartmentid > 0) {
@@ -202,13 +246,10 @@ public class Database {
             pDetails.add(result.getString("Bathrooms"));
             pDetails.add(result.getString("Price"));
             pDetails.add(result.getString("LeaseOptions"));
-
-
         }
         st.close();
         con.close();
         return pDetails;
-
     }
 
     //
@@ -216,6 +257,21 @@ public class Database {
 //    // after seeing the house the information about it will be displayed
     //might be used to show amenities for an individual apartment/house
     public static ArrayList<String> ViewHA(int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+    		offlineResult.add("Laundry");
+    		offlineResult.add("Parking");
+    		offlineResult.add("HardwoodFloors");
+    		offlineResult.add("Dishwasher");
+    		offlineResult.add("AirConditioner");
+    		offlineResult.add("Patio");
+    		offlineResult.add("Gym");
+    		offlineResult.add("Pool");
+    		offlineResult.add("PetsAllowed");
+    		offlineResult.add("GarbageDisposal");
+    		offlineResult.add("Refrigerator");
+    		return offlineResult;
+    	}
         String query = "";
         if(apartmentid > 0){
             query = "select apartment.LocationID from apartment where apartment.ApartmentID = " + "\"" + apartmentid + "\"";
@@ -249,18 +305,14 @@ public class Database {
         }
         try {
             for (int j = 0; !myarray.isEmpty(); j++) {
-
                 System.out.println(myarray.get(j));
             }
         } catch (Exception e) {
 
         }
-        int j = 0;
-
         st.close();
         con.close();
         return myarray;
-
     }
 
     /*
@@ -272,13 +324,17 @@ public class Database {
      * have given qualifiers for automatic accept
      */
     public static void applicationRequest(int userid, ArrayList<Integer> roommates, int userIncome, int ApartmentId, int HouseID, String LeaseOption) throws Exception {
-        String query = "";
+    	if (isOffline ) {
+    		System.out.println("Sent in an application request.");
+    		return;
+    	}
+    	String query = "";
         if(ApartmentId > 0){
-           query = "INSERT INTO `mydb`.`application` (`MainUserID`, `Income`, `ApartmentID`, `LeaseOption`) VALUES ("
+           query = "INSERT INTO `group6`.`application` (`MainUserID`, `Income`, `ApartmentID`, `LeaseOption`) VALUES ("
                     + "\"" + userid + "\", " + "\"" + userIncome + "\", " + "\"" + ApartmentId + "\", " + "\"" + LeaseOption + "\")";
         }
         if(HouseID > 0){
-            query = "INSERT INTO `mydb`.`application` (`MainUserID`, `Income`, `HouseID`, `LeaseOption`) VALUES ("
+            query = "INSERT INTO `group6`.`application` (`MainUserID`, `Income`, `HouseID`, `LeaseOption`) VALUES ("
                     + "\"" + userid + "\", " + "\"" + userIncome + "\", " + "\"" + HouseID + "\", " + "\"" + LeaseOption + "\")";
         }
         System.out.println(query);
@@ -286,16 +342,13 @@ public class Database {
         Connection con = DriverManager.getConnection(URL, username, password);
         Statement st = con.createStatement();
         int count = st.executeUpdate(query);
-
-
         st.close();
         con.close();
         insertRoommatesApp(roommates, userid, ApartmentId, HouseID);
-
     }
 
     public static void insertRoommatesApp(ArrayList<Integer> roommates, int mainuser, int apartmentid, int houseid) throws Exception {
-        String query = "";
+    	String query = "";
         if (apartmentid > 0) {
             query = "select application.ApplicationID from application where application.MainUserID = " + "\"" + mainuser + "\"" + " AND application.ApartmentID = " + "\"" + apartmentid + "\"";
         }
@@ -311,7 +364,7 @@ public class Database {
         String Updatequery = "";
         try {
             for (int i = 0; !roommates.isEmpty(); i++) {
-                Updatequery = "INSERT INTO `mydb`.`application_has_user` (`ApplicationID`, `UserID`) VALUES (" + "\"" + appID + "\", " + "\"" + roommates.get(i) + "\")";
+                Updatequery = "INSERT INTO `group6`.`application_has_user` (`ApplicationID`, `UserID`) VALUES (" + "\"" + appID + "\", " + "\"" + roommates.get(i) + "\")";
                 int count = st.executeUpdate(Updatequery);
             }
         }catch(Exception e){
@@ -322,7 +375,18 @@ public class Database {
     }
 
     public static ArrayList<String> viewAllApplications() throws Exception {
-        String query = "select * from application where application.ApplicationStatus is null";
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+    		offlineResult.add("000069");
+    		offlineResult.add("001234");
+    		offlineResult.add("1000000.00");
+    		offlineResult.add("000123");
+    		offlineResult.add("000002");
+    		offlineResult.add("Approved");
+    		offlineResult.add("All");
+    		return offlineResult;
+    	}
+    	String query = "select * from application where application.ApplicationStatus is null";
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
         Statement st = con.createStatement();
@@ -359,11 +423,11 @@ public class Database {
         String duration = "12 Months";
         String query = "";
         if(apartmentid > 0) {
-            query = "INSERT INTO `mydb`.`contract` (`Duration`, `Cost`, `UserID`, `ApartmentID`, `LateRentPenalty`, `EarlyTpenalty`) VALUES ("
+            query = "INSERT INTO `group6`.`contract` (`Duration`, `Cost`, `UserID`, `ApartmentID`, `LateRentPenalty`, `EarlyTpenalty`) VALUES ("
                     + "\"" + duration + "\", " + "\"" + cost + "\", " + "\"" + userid + "\", " + "\"" + apartmentid + "\", " + "\"" + rentPenalty + "\", " + "\"" + EarlyTPenalty + "\");";
         }
         if(houseid > 0){
-            query = "INSERT INTO `mydb`.`contract` (`Duration`, `Cost`, `UserID`, `HouseID`, `LateRentPenalty`, `EarlyTpenalty`) VALUES ("
+            query = "INSERT INTO `group6`.`contract` (`Duration`, `Cost`, `UserID`, `HouseID`, `LateRentPenalty`, `EarlyTpenalty`) VALUES ("
                     + "\"" + duration + "\", " + "\"" + cost + "\", " + "\"" + userid + "\", " + "\"" + houseid + "\", " + "\"" + rentPenalty + "\", " + "\"" + EarlyTPenalty + "\");";
         }
         
@@ -382,6 +446,15 @@ public class Database {
      * if they own multiple apartments
      */
     public static ArrayList<String> CheckDues(int UserID) throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+    		offlineResult.add("000001"); offlineResult.add("Monthly"); offlineResult.add("Paid"); offlineResult.add("0.00"); offlineResult.add(UserID + ""); 
+    		offlineResult.add("000002"); offlineResult.add("Monthly"); offlineResult.add("Paid"); offlineResult.add("0.00"); offlineResult.add(UserID + ""); 
+    		offlineResult.add("000003"); offlineResult.add("Monthly"); offlineResult.add("Unpaid"); offlineResult.add("350.00"); offlineResult.add(UserID + ""); 
+    		offlineResult.add("000004"); offlineResult.add("Monthly"); offlineResult.add("Paid"); offlineResult.add("0.00"); offlineResult.add(UserID + ""); 
+    		offlineResult.add("000005"); offlineResult.add("Monthly"); offlineResult.add("Paid"); offlineResult.add("0.00"); offlineResult.add(UserID + ""); 
+    		return offlineResult;
+    	}
         String query = "select * from BILL WHERE bill.UserID =" + "\"" + UserID + "\"" + "AND bill.PaymentStatus = 0";
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
@@ -424,7 +497,11 @@ public class Database {
      * amount from their currents
      */
     public static void PayDues(int BillID) throws Exception {
-        String query = "UPDATE `mydb`.`bill` SET `PaymentStatus` = '1' WHERE (`BillID` = " + "\"" + BillID + "\")";
+        if (isOffline) {
+        	System.out.println("Payment sent successfully.");
+        	return;
+        }
+        String query = "UPDATE `group6`.`bill` SET `PaymentStatus` = '1' WHERE (`BillID` = " + "\"" + BillID + "\")";
         System.out.println(query);
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
@@ -440,16 +517,20 @@ public class Database {
      * then upload that under their renter id
      */
     public static void AddReview(int apartmentid, int houseid, int score, int userid) throws Exception {
-        // add Recommendation on canvas
+    	if (isOffline) {
+    		System.out.println("Review sent successfully.");
+    		return;
+    	}
+    	// add Recommendation on canvas
         String addquery = "";
         String supportQuery = "";
         if (houseid > 0) {
-            addquery = "INSERT INTO `mydb`.`review` (`Score`, `UserID`, `HouseID`) VALUES (";
+            addquery = "INSERT INTO `group6`.`review` (`Score`, `UserID`, `HouseID`) VALUES (";
             supportQuery = "'" + score + "', " + "'" + userid + "', " + "'" + houseid + "' )";
             addquery = addquery.concat(supportQuery);
             System.out.println(addquery);
         } else if (apartmentid > 0) {
-            addquery = "INSERT INTO `mydb`.`review` (`Score`, `UserID`, `ApartmentID`) VALUES (";
+            addquery = "INSERT INTO `group6`.`review` (`Score`, `UserID`, `ApartmentID`) VALUES (";
             supportQuery = "'" + score + "', " + "'" + userid + "', " + "'" + apartmentid + "' )";
             addquery = addquery.concat(supportQuery);
         }
@@ -457,11 +538,8 @@ public class Database {
         Connection con = DriverManager.getConnection(URL, username, password);
         Statement st = con.createStatement();
         int count = st.executeUpdate(addquery);
-
         st.close();
         con.close();
-
-
     }
 
     public static void showReview(int apartmentid, int houseid) throws Exception {
@@ -496,9 +574,7 @@ public class Database {
         } catch (Exception e) {
             System.out.print("");
         }
-        int j = 0;
         //return the average score for an apartment
-
         st.close();
         con.close();
     }
@@ -510,6 +586,10 @@ public class Database {
      * whatever 2 months of rent is the penalty to cancel
      */
     public static void REarlyT(int userid, int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		System.out.println("Early terminated a contract.");
+    		return;
+    	}
         String query = "";
         if(apartmentid > 0){
             query = "select lease.LeaseID from lease where lease.MainUserID = " + "\"" + userid + "\"" +  " AND lease.ApartmentID = " + "\"" + apartmentid + "\"";
@@ -524,14 +604,17 @@ public class Database {
         ResultSet result = st.executeQuery(query);
         result.next();
         String leaseID = result.getString("LeaseID");
-        String updateQuery = "UPDATE `mydb`.`lease` SET `Status` = '0' WHERE (`LeaseID` = " + "\"" + leaseID + "\")";
+        String updateQuery = "UPDATE `group6`.`lease` SET `Status` = '0' WHERE (`LeaseID` = " + "\"" + leaseID + "\")";
         int count = st.executeUpdate(updateQuery);
-
         st.close();
         con.close();
         terminateContract(userid,apartmentid,houseid);
     }
     public static void terminateContract(int userid, int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		System.out.println("Terminated a contract.");
+    		return;
+    	}
         String query = "";
         if(apartmentid > 0){
             query = "select contract.ContractID, contract.EarlyTPenalty from contract where contract.UserID = " + "\"" + userid + "\"" +
@@ -548,7 +631,7 @@ public class Database {
         result.next();
         String contractid = result.getString("ContractID");
         Double EarlyTPenalty = Double.parseDouble(result.getString("EarlyTPenalty"));
-        String contractStatus = "UPDATE `mydb`.`contract` SET `Status` = '0' WHERE (`ContractID` = " + "\"" + contractid + "\")";
+        String contractStatus = "UPDATE `group6`.`contract` SET `Status` = '0' WHERE (`ContractID` = " + "\"" + contractid + "\")";
         int count  = st.executeUpdate(contractStatus);
         CreateBill(userid, "Early Termination Fee", EarlyTPenalty, apartmentid, houseid);
 
@@ -567,6 +650,10 @@ public class Database {
      * can begin moving in and making payments
      */
     public static void CLease(int userid, int apartmentid, int houseid, ArrayList<Integer> roommates, String LeaseOption) throws Exception {
+    	if (isOffline) {
+    		System.out.println("Created a lease.");
+    		return;
+    	}
         /*
          *  if the bill is not paid within 5 days from the end or
          *  if the bill is late there will be a penalty added to the bill
@@ -593,15 +680,15 @@ public class Database {
         String Leaseadd = "";
         String isLeased ="";
         if(apartmentid > 0){
-            Leaseadd = "INSERT INTO `mydb`.`lease` (`LeaseOption`, `ApartmentID`, `rentAmount`, `MainUserID`) VALUES ("
+            Leaseadd = "INSERT INTO `group6`.`lease` (`LeaseOption`, `ApartmentID`, `rentAmount`, `MainUserID`) VALUES ("
                     + "\"" + LeaseOption + "\", " + "\"" + apartmentid + "\", " + "\"" + price + "\", " + "\"" + userid + "\")";
-            isLeased = "UPDATE `mydb`.`apartment` SET `isLeased` = '1' WHERE (`ApartmentID` = " + "\"" + apartmentid + "\")";
+            isLeased = "UPDATE `group6`.`apartment` SET `isLeased` = '1' WHERE (`ApartmentID` = " + "\"" + apartmentid + "\")";
 
         }
         if(houseid > 0){
-            Leaseadd = "INSERT INTO `mydb`.`lease` (`LeaseOption`, `HouseID`, `rentAmount`, `MainUserID`) VALUES ("
+            Leaseadd = "INSERT INTO `group6`.`lease` (`LeaseOption`, `HouseID`, `rentAmount`, `MainUserID`) VALUES ("
                     + "\"" + LeaseOption + "\", " + "\"" + houseid + "\", " + "\"" + price + "\", " + "\"" + userid + "\")";
-            isLeased = "UPDATE `mydb`.`house` SET `isLeased` = '1' WHERE (`HouseID` = " + "\"" + houseid + "\")";
+            isLeased = "UPDATE `group6`.`house` SET `isLeased` = '1' WHERE (`HouseID` = " + "\"" + houseid + "\")";
         }
         int count = st.executeUpdate(Leaseadd);
         insertRoommatesLease(userid, apartmentid, houseid, roommates);
@@ -631,7 +718,7 @@ public class Database {
         String Updatequery = "";
         try {
             for (int i = 0; !roommates.isEmpty(); i++) {
-                Updatequery = "INSERT INTO `mydb`.`lease_has_user` (`LeaseID`, `UserID`) VALUES (" + "\"" + LeaseID + "\", " + "\"" + roommates.get(i) + "\")";
+                Updatequery = "INSERT INTO `group6`.`lease_has_user` (`LeaseID`, `UserID`) VALUES (" + "\"" + LeaseID + "\", " + "\"" + roommates.get(i) + "\")";
                 int count = st.executeUpdate(Updatequery);
             }
         }catch(Exception e){
@@ -645,11 +732,11 @@ public class Database {
     public static void CreateBill(int UserID, String BillType, Double Amount, int apartmentid, int houseid) throws Exception{
         String query = "";
         if(apartmentid > 0) {
-            query = "INSERT INTO `mydb`.`bill` (`UserID`, `BillType`, `PaymentStatus`, `Amount`, `ApartmentID`) VALUES ("
+            query = "INSERT INTO `group6`.`bill` (`UserID`, `BillType`, `PaymentStatus`, `Amount`, `ApartmentID`) VALUES ("
                     + "\"" + UserID + "\", " + "\"" + BillType + "\", " + "\"" + 0 + "\", " + "\"" + Amount + "\", " + "\"" + apartmentid + "\")";
         }
         if(houseid > 0){
-            query = "INSERT INTO `mydb`.`bill` (`UserID`, `BillType`, `PaymentStatus`, `Amount`, `HouseID`) VALUES ("
+            query = "INSERT INTO `group6`.`bill` (`UserID`, `BillType`, `PaymentStatus`, `Amount`, `HouseID`) VALUES ("
                     + "\"" + UserID + "\", " + "\"" + BillType + "\", " + "\"" + 0 + "\", " + "\"" + Amount + "\", " + "\"" + houseid + "\")";
         }
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -665,6 +752,13 @@ public class Database {
      * contained within the text file
      */
     public static ArrayList<String> ChHistory(int userid) throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+			offlineResult.add("000001");offlineResult.add("$");offlineResult.add("500.00");
+			offlineResult.add("000002");offlineResult.add("$");offlineResult.add("1200.00");
+    		offlineResult.add("000003");offlineResult.add("$");offlineResult.add("800.00");
+    		return offlineResult;
+    	}
         String query = "select lease.LeaseID, lease.Status from lease where lease.MainUserID = " + "\"" + userid + "\"" + " ORDER BY lease.Status desc";
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
@@ -684,16 +778,6 @@ public class Database {
                 }
             }
         }
-
-//        try {
-//            for (int j = 0; !myarray.isEmpty(); j++) {
-//
-//                System.out.println(myarray.get(j));
-//            }
-//        } catch (Exception e) {
-//
-//        }
-//        int j = 0;
         st.close();
         con.close();
         return myarray;
@@ -723,6 +807,9 @@ public class Database {
      * Check the balance of a given user
      */
     public static Double ChBalance(int userid, int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		return 1000.00;
+    	}
         String query = "";
         if(apartmentid > 0) {
             query = "select bill.Amount from bill where bill.UserID = " + "\"" + userid + "\"" + " AND bill.PaymentStatus = 0 AND bill.ApartmentID = " + "\"" + apartmentid + "\"";
@@ -747,7 +834,6 @@ public class Database {
             }
         } catch (Exception e) {
         }
-        int j = 0;
         st.close();
         con.close();
         return totalAmt;
@@ -758,6 +844,10 @@ public class Database {
      * Add late fees/penalties to a user
      */
     public static void AddLFees(int userid, int apartmentid, int houseid) throws Exception {
+    	if (isOffline) {
+    		System.out.println("Added a late fee.");
+    		return;
+    	}
         String query = "";
         if(apartmentid > 0) {
             query = "select contract.LateRentPenalty from contract where contract.UserID = "
@@ -788,6 +878,15 @@ public class Database {
      *
      */
     public static ArrayList<String> GenReport() throws Exception {
+    	if (isOffline) {
+    		ArrayList<String> offlineResult = new ArrayList<>();
+    		offlineResult.add("000082"); offlineResult.add("Jacksonville"); offlineResult.add("10");
+    		offlineResult.add("000324"); offlineResult.add("New York"); offlineResult.add("20");
+    		offlineResult.add("001122"); offlineResult.add("Mars"); offlineResult.add("1337");
+    		offlineResult.add("000021"); offlineResult.add("Area 11"); offlineResult.add("1738");
+    		offlineResult.add("019990"); offlineResult.add("Shinjuku Ghetto"); offlineResult.add("420");
+    		return offlineResult;
+    	}
         String query = "select apartment.LocationID, location.LocationName, SUM(bill.Amount) AS Revenue from bill join apartment on apartment.ApartmentID = " +
                 "bill.ApartmentID join location on apartment.LocationID = location.LocationID where bill.BillType = "+"\""+"rent"+"\""+" AND PaymentStatus = 1 GROUP BY LocationID";
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -800,12 +899,10 @@ public class Database {
             myarray.add(result.getString("LocationID"));
             myarray.add(result.getString("LocationName"));
             myarray.add(result.getString("Revenue"));
-
         }
-        int i  =1;
+        int i = 1;
         try {
             for (int j = 0; !myarray.isEmpty(); j++) {
-
                 System.out.print(myarray.get(j) + " ");
                 if(i%3 == 0){
                     System.out.println();
@@ -813,16 +910,17 @@ public class Database {
                 i++;
             }
         } catch (Exception e) {
-
         }
-        int j = 0;
-
         st.close();
         con.close();
         return myarray;
     }
     public static void addApartment(ArrayList<String> apinfo)throws Exception{
-        String query = "INSERT INTO `mydb`.`apartment` (`ApartmentID`, `ApartmentNumber`, `BuildingID`, `Bedrooms`, `Bathrooms`, `Price`, `LocationID`) VALUES ("
+    	if (isOffline) {
+    		System.out.println("Apartment added.");
+    		return;
+    	}
+        String query = "INSERT INTO `group6`.`apartment` (`ApartmentID`, `ApartmentNumber`, `BuildingID`, `Bedrooms`, `Bathrooms`, `Price`, `LocationID`) VALUES ("
         + "\"" + apinfo.get(0) + "\", " + "\"" + apinfo.get(1) + "\", " + "\"" + apinfo.get(2) + "\", " + "\"" + apinfo.get(3) + "\", " + "\"" + apinfo.get(4) + "\", "
                 + "\"" + apinfo.get(5) + "\", " + "\"" + apinfo.get(6) + "\")";
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -833,7 +931,11 @@ public class Database {
         con.close();
     }
     public static void addHouse(ArrayList<String> hinfo) throws Exception{
-        String query = "INSERT INTO `mydb`.`house` (`HouseID`, `Bedrooms`, `Bathrooms`, `Price`, `LocationID`) VALUES ("
+    	if (isOffline) {
+    		System.out.println("House added.");
+    		return;
+    	}
+        String query = "INSERT INTO `group6`.`house` (`HouseID`, `Bedrooms`, `Bathrooms`, `Price`, `LocationID`) VALUES ("
         + "\"" + hinfo.get(0) + "\", " + "\"" + hinfo.get(1) + "\", " + "\"" + hinfo.get(2) + "\", " + "\"" + hinfo.get(3) + "\", " + "\"" + hinfo.get(4) + "\")";
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
@@ -844,12 +946,16 @@ public class Database {
     }
 
     public static void updateListing(int apartmentid, int houseid, Double Nprice) throws Exception{
+    	if (isOffline) {
+    		System.out.println("Listing updated.");
+    		return;
+    	}
         String query = "";
         if(apartmentid > 0){
-            query = "UPDATE `mydb`.`apartment` SET `Price` = " + "\"" + Nprice + "\"" + " WHERE (`ApartmentID` = " + "\"" + apartmentid +"\")";
+            query = "UPDATE `group6`.`apartment` SET `Price` = " + "\"" + Nprice + "\"" + " WHERE (`ApartmentID` = " + "\"" + apartmentid +"\")";
         }
         if(houseid > 0){
-            query = "UPDATE `mydb`.`house` SET `Price` = " + "\"" + Nprice + "\"" + " WHERE (`HouseID` = " + "\"" + houseid +"\")";
+            query = "UPDATE `group6`.`house` SET `Price` = " + "\"" + Nprice + "\"" + " WHERE (`HouseID` = " + "\"" + houseid +"\")";
         }
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
@@ -860,12 +966,16 @@ public class Database {
     }
 
     public static void deleteListing(int apartmentid, int houseid) throws Exception{
+    	if (isOffline) {
+    		System.out.println("Listing deleted.");
+    		return;
+    	}
         String query = "";
         if(apartmentid > 0){
-            query = "DELETE FROM `mydb`.`apartment` WHERE (`ApartmentID` = " + "\"" + apartmentid + "\")";
+            query = "DELETE FROM `group6`.`apartment` WHERE (`ApartmentID` = " + "\"" + apartmentid + "\")";
         }
         if(houseid > 0){
-            query = "DELETE FROM `mydb`.`house` WHERE (`HouseID` = " + "\"" + houseid + "\")";
+            query = "DELETE FROM `group6`.`house` WHERE (`HouseID` = " + "\"" + houseid + "\")";
         }
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection con = DriverManager.getConnection(URL, username, password);
