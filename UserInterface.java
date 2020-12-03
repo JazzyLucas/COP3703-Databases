@@ -786,14 +786,14 @@ class UserInterface extends JFrame implements ActionListener {
     	addApartmentButton.addActionListener(UI);
     	deleteInventoryButton.addActionListener(UI);
     	updateInventoryButton.addActionListener(UI);
-    	miHouseIDField = new JTextField("House ID");
-    	miBedroomsField = new JTextField("Bedrooms");
-    	miBathroomsField = new JTextField("Bathrooms");
-    	miPriceField = new JTextField("00.00");
-    	miLocationField = new JTextField("Location");
-    	miApartmentIDField = new JTextField("Apartment ID");
-    	miApartmentNumberField = new JTextField("Apartment Number");
-    	miBuildingIDField = new JTextField("Building ID");
+    	miHouseIDField = new JTextField("");
+    	miBedroomsField = new JTextField("0");
+    	miBathroomsField = new JTextField("0");
+    	miPriceField = new JTextField("0.0");
+    	miLocationField = new JTextField("");
+    	miApartmentIDField = new JTextField("");
+    	miApartmentNumberField = new JTextField("");
+    	miBuildingIDField = new JTextField("");
     	addHouseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	addApartmentButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	deleteInventoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -801,22 +801,30 @@ class UserInterface extends JFrame implements ActionListener {
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
     	manageInventoryPanel.add(tempDashboardButton);
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(new JLabel("Apartment ID"));
     	manageInventoryPanel.add(miApartmentIDField);
-    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Apartment Number"));
     	manageInventoryPanel.add(miApartmentNumberField);
-    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Building ID"));
     	manageInventoryPanel.add(miBuildingIDField);
-    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("House ID"));
     	manageInventoryPanel.add(miHouseIDField);
     	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Bedrooms"));
     	manageInventoryPanel.add(miBedroomsField);
     	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Bathrooms"));
     	manageInventoryPanel.add(miBathroomsField);
     	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Price"));
     	manageInventoryPanel.add(miPriceField);
     	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(new JLabel("Location"));
     	manageInventoryPanel.add(miLocationField);
-    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
     	manageInventoryPanel.add(addHouseButton);
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
     	manageInventoryPanel.add(addApartmentButton);
@@ -828,12 +836,14 @@ class UserInterface extends JFrame implements ActionListener {
     }
     
     private static void resetmiFields() {
-    	miHouseIDField.setText("House ID");
-    	miBedroomsField.setText("Bedrooms");
-    	miBathroomsField.setText("Bathrooms");
-    	miPriceField.setText("00.00");
-    	miLocationField.setText("Location");
-    	miApartmentIDField.setText("Apartment ID");
+    	miApartmentNumberField.setText("");
+    	miBuildingIDField.setText("");
+    	miHouseIDField.setText("");
+    	miBedroomsField.setText("");
+    	miBathroomsField.setText("");
+    	miPriceField.setText("");
+    	miLocationField.setText("");
+    	miApartmentIDField.setText("");
     }
     
     private static void setupGenerateReportsPanel() {
@@ -1225,6 +1235,7 @@ class UserInterface extends JFrame implements ActionListener {
         		ArrayList<String> temp = new ArrayList<String>();
         		temp.add(miApartmentIDField.getText());
         		temp.add(miApartmentNumberField.getText());
+        		temp.add(miBuildingIDField.getText());
         		temp.add(miBedroomsField.getText());
         		temp.add(miBathroomsField.getText());
         		temp.add(miPriceField.getText());
@@ -1251,7 +1262,7 @@ class UserInterface extends JFrame implements ActionListener {
 			}
         }
         
-        if (s.equals("Delete Inventory")) {
+        if (s.equals("Update Inventory")) {
         	try {
         		Database.updateListing(Integer.parseInt(miApartmentIDField.getText()), Integer.parseInt(miHouseIDField.getText()), Double.parseDouble(miPriceField.getText())); 
         		resetmiFields();
@@ -1260,7 +1271,7 @@ class UserInterface extends JFrame implements ActionListener {
 			}
         }
         
-        if (s.equals("Update Inventory")) {
+        if (s.equals("Delete Inventory")) {
         	try {
         		Database.deleteListing(Integer.parseInt(miApartmentIDField.getText()), Integer.parseInt(miHouseIDField.getText()));
         		resetmiFields();
