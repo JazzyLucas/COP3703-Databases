@@ -96,6 +96,7 @@ class UserInterface extends JFrame implements ActionListener {
     static JScrollPane scroll2;
     static ArrayList<String> resultStrings;
     static ArrayList<String> detailStrings; 
+    static int houseOrApartment = 0;
 	
 	// Leases Elements
     static JPanel leasePanel;
@@ -913,32 +914,32 @@ class UserInterface extends JFrame implements ActionListener {
 			applicationsTextArea.append("Applications:");
 			int i = 0;
 			for (String string : newList) {
-				switch (i) {
-				case 0:
-					applicationsTextArea.append("\n\nApplication ID: " + string);
-					break;
-				case 1:
-					applicationsTextArea.append("\nMain User ID: " + string);
-					break;
-				case 2:
-					applicationsTextArea.append("\nIncome: " + string);
-					break;
-				case 3:
-					applicationsTextArea.append("\nApartment ID: " + string);
-					break;
-				case 4:
-					applicationsTextArea.append("\nHouse ID: " + string);
-					break;
-				case 5:
-					applicationsTextArea.append("\nApplication Status: " + string);
-					break;
-				case 6:
-					applicationsTextArea.append("\nLease Options: " + string);
-					i = -1;
-					break;
-				default:
-					break;
-				}
+					switch (i) {
+					case 0:
+						applicationsTextArea.append("\n\nApplication ID: " + string);
+						break;
+					case 1:
+						applicationsTextArea.append("\nMain User ID: " + string);
+						break;
+					case 2:
+						applicationsTextArea.append("\nIncome: " + string);
+						break;
+					case 3:
+						applicationsTextArea.append("\nApartment ID: " + string);
+						break;
+					case 4:
+						applicationsTextArea.append("\nHouse ID: " + string);
+						break;
+					case 5:
+						applicationsTextArea.append("\nApplication Status: " + string);
+						break;
+					case 6:
+						applicationsTextArea.append("\nLease Options: " + string);
+						i = -1;
+						break;
+					default:
+						break;
+					}
 				i++;
 			}
 		} catch (Exception e) {
@@ -1006,6 +1007,9 @@ class UserInterface extends JFrame implements ActionListener {
     private static void displaySearchResults() {
         apartmentInfo = new JTextArea(15,30);
         apartmentInfo.append("Results: ");
+        if (resultStrings == null) {
+        	apartmentInfo.setText("No results.");
+        }
     	for (String string : resultStrings) {
             int PIDInt = Integer.parseInt(string);
             ArrayList<String> tempList = new ArrayList<String>();
@@ -1019,33 +1023,61 @@ class UserInterface extends JFrame implements ActionListener {
                 i++;
                 if (displayThing == null)
                     displayThing = "";
-                switch (i) {
-                case 1:
-                    apartmentInfo.append("\nApartmentID: " + displayThing);
-                    break;
-                case 2:
-                    apartmentInfo.append("\nLocation: " + displayThing);
-                    break;
-                case 3:
-                    apartmentInfo.append("\nApartment Number: " + displayThing);
-                    break;
-                case 4:
-                    apartmentInfo.append("\nBuildingID: " + displayThing);
-                    break;
-                case 5:
-                    apartmentInfo.append("\nBedrooms: " + displayThing);
-                    break;
-                case 6:
-                    apartmentInfo.append("\nBathrooms: " + displayThing);
-                    break;
-                case 7:
-                    apartmentInfo.append("\nPrice: " + displayThing);
-                    break;
-                case 8:
-                    apartmentInfo.append("\nLease Options: " + displayThing + "\n");
-                    i = 0;
-                    break;
-                }
+    			if (houseOrApartment == 0) {
+                    switch (i) {
+                    case 1:
+                        apartmentInfo.append("\nApartment ID: " + displayThing);
+                        break;
+                    case 2:
+                        apartmentInfo.append("\nLocation: " + displayThing);
+                        break;
+                    case 3:
+                        apartmentInfo.append("\nApartment Number: " + displayThing);
+                        break;
+                    case 4:
+                        apartmentInfo.append("\nBuilding ID: " + displayThing);
+                        break;
+                    case 5:
+                        apartmentInfo.append("\nBedrooms: " + displayThing);
+                        break;
+                    case 6:
+                        apartmentInfo.append("\nBathrooms: " + displayThing);
+                        break;
+                    case 7:
+                        apartmentInfo.append("\nPrice: " + displayThing);
+                        break;
+                    case 8:
+                        apartmentInfo.append("\nLease Options: " + displayThing + "\n");
+                        i = 0;
+                        break;
+                    }
+    			} else if (string != null) {
+                    switch (i) {
+                    case 1:
+                        apartmentInfo.append("\nHouse ID: " + displayThing);
+                        break;
+                    case 2:
+                        apartmentInfo.append("\nLocation: " + displayThing);
+                        break;
+                    case 3:
+                        apartmentInfo.append("\nNeighborhood: " + displayThing);
+                        break;
+                    case 4:
+                        apartmentInfo.append("\nBedrooms: " + displayThing);
+                        break;
+                    case 5:
+                        apartmentInfo.append("\nBathrooms: " + displayThing);
+                        break;
+                    case 6:
+                        apartmentInfo.append("\nPrice: " + displayThing);
+                        break;
+                    case 7:
+                        apartmentInfo.append("\nLease Options: " + displayThing + "\n");
+                        i = 0;
+                        break;
+                    }
+    			}
+
             }
         }
         if (!hasSearched) {
@@ -1386,7 +1418,7 @@ class UserInterface extends JFrame implements ActionListener {
         
         if (s.equals("Search")) {
         	try {
-        		int houseOrApartment = 0;
+        		houseOrApartment = 0;
         		if (houseTypeRadio.isSelected()) {
         			houseOrApartment = 1;
         		} else {
