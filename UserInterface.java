@@ -12,6 +12,9 @@ import javax.swing.*;
 
 /**
  * Welcome to the Database UI
+ * <p>
+ * This class serves as a front-end application for managing an apartment/housing database.
+ * It is best suited to be ran with a Database.java class as the back-end.
  * 
  * @author JazzyLucas
  */
@@ -22,28 +25,20 @@ class UserInterface extends JFrame implements ActionListener {
 	private static boolean isAdmin = false;
 	public static boolean isLoggedIn = false;
 	private static boolean hasSearched = false;
-	
-	/*
-	 * Main stuff
-	 * 
-	 * Here's an explanation of these layouts:
-	 * Frames hold a panel. Panels can contain other panels, but more importantly, panels can contain gridlayouts!
-	 * We'll be using panels & layouts INSIDE a main panel to display all of the necessary "pages".
-	 */
     static JFrame mainFrame; 
     static JPanel mainPanel;
-    static JButton dashboardButton; // We'll use this to go to the dashboard from everything else
+    static JButton dashboardButton;
 	
 	// Login Elements
 	static JPanel loginPanel;
-	static String username;
+	static String email;
 	static String password;
-    static JTextField usernametxtField;
+    static JTextField emailtxtField;
     static JPasswordField passwordtxtField;
     static JLabel userMessage;
     static JButton signupButton;
-    static JButton subButton;
-	static String signupUsername;
+    static JButton loginButton;
+	static String signupAddress;
 	static String signupPassword;
 	static String signupFirstName;
 	static String signupLastName;
@@ -59,8 +54,11 @@ class UserInterface extends JFrame implements ActionListener {
     static JTextField signupCitytxtField;
     static JTextField signupStatetxtField;
     static JTextField signupZiptxtField;
-    static JTextField signupUsernametxtField;
+    static JTextField signupAddresstxtField;
     static JTextField signupPasswordtxtField;
+    
+    // Demo Login Elements
+    static JCheckBox demoCheckBox;
     
     // Dashboard Elements
 	static JPanel dashboardPanel;
@@ -89,9 +87,23 @@ class UserInterface extends JFrame implements ActionListener {
     static JButton searchButton;
     static JPanel resultsPanel;
     static JTextArea apartmentInfo;
+    static JScrollPane scroll;
+    static JTextField apartmentIDField;
+    static JButton checkApartmentButton;
+    static JTextArea apartmentDetailstxtArea;
+    static JPanel detailsPanel;
+    static Boolean hasViewedDetails;
+    static JScrollPane scroll2;
+    static ArrayList<String> resultStrings;
+    static ArrayList<String> detailStrings; 
 	
 	// Leases Elements
     static JPanel leasePanel;
+    static JTextField applyForLeasetxtField;
+    static JTextField roommatestxtField;
+    static JTextField apartmentIDtxtField;
+    static JTextField leaseOptiontxtField;
+    static JButton applyForLeaseButton;
     static JPanel leaseInfoPanel;
     static ArrayList<String> leaseInfoStrings; 
     static ArrayList<JTextField> leaseInfos;
@@ -103,6 +115,9 @@ class UserInterface extends JFrame implements ActionListener {
     static ArrayList<JTextField> paymentInfos;
     static JTextField paymentIDField;
     static JButton payButton;
+    static JTextField billIDtxtField;
+    static JTextField amounttxtField;
+    static JButton payBillButton;
     
     // Review Elements
     static JPanel reviewPanel;
@@ -127,7 +142,8 @@ class UserInterface extends JFrame implements ActionListener {
     static JTextArea informationArea;
     static JPanel informationPanel;
     static JButton checkUserButton_;
-    static JButton checkLeaseButton;
+    static JButton leaseHistoryButton;
+    static ArrayList<String> historyInformation;
     
     // Contract Modification Elements
     static JPanel contractModificationPanel;
@@ -136,17 +152,29 @@ class UserInterface extends JFrame implements ActionListener {
     static JTextField contractHouseIDField;
     static JButton earlyTerminationButton;
     static JButton terminateContractButton;
+    static JButton lateContractButton;
     
     // ManageInventory Elements
     static JPanel manageInventoryPanel;
-    // (Might need some text fields)
-	static JButton addInventoryButton;
+    static JTextField miHouseIDField;
+    static JTextField miBedroomsField;
+    static JTextField miBathroomsField;
+    static JTextField miPriceField;
+    static JTextField miLocationField;
+    static JTextField miApartmentIDField;
+	static JTextField miApartmentNumberField;
+	static JTextField miBuildingIDField;
+	static JButton addHouseButton;
 	static JButton deleteInventoryButton;
 	static JButton updateInventoryButton;
+	static JButton addApartmentButton;
     
     // GenerateReports Elements
     static JPanel generateReportsPanel;
     static JTextArea reportsTextArea;
+    static ArrayList<String> reportInfo;
+    static JButton applicationsButton;
+    static JTextArea applicationsTextArea;
     
     // Apartment Elements (for getting details on a specific apartment)
     static JPanel apartmentPanel;
@@ -173,13 +201,11 @@ class UserInterface extends JFrame implements ActionListener {
         userInformation.setText("[User Information]");
         userInformation.setEditable(false);
         mainFrame.add(mainPanel);
-        
-        // Create an instance of this UI and set up events
-        mainFrame.setSize(900, 500); 
+        mainFrame.setSize(900, 900); 
         mainFrame.setVisible(true);
     	
         displayLogin();
-    } 
+    }
     
     public static void displayLogin() {
     	for (Component c : mainPanel.getComponents()) {
@@ -283,37 +309,34 @@ class UserInterface extends JFrame implements ActionListener {
     }
     
     private static void setupLoginPanel() {
+    	// Set up overall panel
         loginPanel = new JPanel();
         BoxLayout layout = new BoxLayout(loginPanel, BoxLayout.Y_AXIS);
-        //GridLayout layout = new GridLayout(5,1); // 20 rows, 1 column main layout
     	loginPanel.setLayout(layout);
     	JPanel panel1 = new JPanel();
     	JPanel panel2 = new JPanel();
     	panel1.setLayout(new GridLayout(2,2));
     	panel2.setLayout(new GridLayout(9,2));
     	// Set up login panel
-        JLabel usernameLabel = new JLabel("Username: "); 
+        JLabel emailLabel = new JLabel("Email: "); 
         JLabel passwordLabel = new JLabel("Password: ");
-        usernametxtField = new JTextField("", 16);
+        emailtxtField = new JTextField("", 16);
         passwordtxtField = new JPasswordField("", 16);
-        usernameLabel.setLabelFor(usernametxtField);
+        emailLabel.setLabelFor(emailtxtField);
         passwordLabel.setLabelFor(passwordtxtField);
     	JLabel loginTitle = new JLabel("Welcome to the Apartment Database");
     	loginTitle.setHorizontalAlignment(JLabel.CENTER);
         userMessage = new JLabel("");
     	userMessage.setHorizontalAlignment(JLabel.CENTER);
-        subButton = new JButton("Login");
+        loginButton = new JButton("Login");
         signupButton = new JButton("Signup");
-        subButton.addActionListener(UI); 
+        loginButton.addActionListener(UI); 
         signupButton.addActionListener(UI);
-        loginPanel.add(loginTitle);
-        panel1.add(usernameLabel);
-        panel1.add(usernametxtField);
+        panel1.add(emailLabel);
+        panel1.add(emailtxtField);
         panel1.add(passwordLabel);
         panel1.add(passwordtxtField);
         // Set up signup panel
-        JLabel signupUsernameLabel = new JLabel("Username: "); 
-        JLabel signupPasswordLabel = new JLabel("Password: ");
         JLabel signupFirstNameLabel = new JLabel("First Name: "); 
         JLabel signupLastNameLabel = new JLabel("Last Name: ");
         JLabel signupPhoneLabel = new JLabel("Phone: "); 
@@ -321,7 +344,9 @@ class UserInterface extends JFrame implements ActionListener {
         JLabel signupCityLabel = new JLabel("City: "); 
         JLabel signupStateLabel = new JLabel("State: ");
         JLabel signupZipLabel = new JLabel("Zip: "); 
-        signupUsernametxtField = new JTextField("", 16);
+        JLabel signupAddressLabel = new JLabel("Address: "); 
+        JLabel signupPasswordLabel = new JLabel("Password: ");
+        signupAddresstxtField = new JTextField("", 16);
         signupPasswordtxtField = new JTextField("", 16);
         signupFirstNametxtField = new JTextField("", 20);
         signupLastNametxtField = new JTextField("", 20);
@@ -330,7 +355,7 @@ class UserInterface extends JFrame implements ActionListener {
         signupCitytxtField = new JTextField("", 20);
         signupStatetxtField = new JTextField("", 20);
         signupZiptxtField = new JTextField("", 5);
-        signupUsernameLabel.setLabelFor(signupUsernametxtField);
+        signupAddressLabel.setLabelFor(signupAddresstxtField);
         signupPasswordLabel.setLabelFor(signupPasswordtxtField);
         signupFirstNameLabel.setLabelFor(signupFirstNametxtField);
         signupLastNameLabel.setLabelFor(signupLastNametxtField);
@@ -341,10 +366,6 @@ class UserInterface extends JFrame implements ActionListener {
         signupZipLabel.setLabelFor(signupZiptxtField);
     	JLabel signupTitle = new JLabel("Signup:");
     	signupTitle.setHorizontalAlignment(JLabel.CENTER);
-    	panel2.add(signupUsernameLabel);
-    	panel2.add(signupUsernametxtField);
-    	panel2.add(signupPasswordLabel);
-    	panel2.add(signupPasswordtxtField);
     	panel2.add(signupFirstNameLabel);
     	panel2.add(signupFirstNametxtField);
     	panel2.add(signupLastNameLabel);
@@ -359,18 +380,33 @@ class UserInterface extends JFrame implements ActionListener {
     	panel2.add(signupStatetxtField);
     	panel2.add(signupZipLabel);
     	panel2.add(signupZiptxtField);
+    	panel2.add(signupAddressLabel);
+    	panel2.add(signupAddresstxtField);
+    	panel2.add(signupPasswordLabel);
+    	panel2.add(signupPasswordtxtField);
+    	// Demo stuff
+    	JPanel panel3 = new JPanel();
+    	panel3.setLayout(new GridLayout(1,2));
+    	demoCheckBox = new JCheckBox();
+    	JLabel demoLabel = new JLabel("Offline Mode? ");
+    	panel3.add(demoLabel);
+    	panel3.add(demoCheckBox);
     	// Put it all together
+        loginPanel.add(Box.createVerticalStrut(10));
+        loginPanel.add(loginTitle);
         loginPanel.add(Box.createVerticalStrut(10));
         loginPanel.add(panel1);
         loginPanel.add(userMessage);
         loginPanel.add(Box.createVerticalStrut(10));
-        loginPanel.add(subButton);
+        loginPanel.add(loginButton);
         loginPanel.add(Box.createVerticalStrut(10));
     	loginPanel.add(signupTitle);
         loginPanel.add(Box.createVerticalStrut(10));
     	loginPanel.add(panel2);
         loginPanel.add(Box.createVerticalStrut(10));
         loginPanel.add(signupButton);
+        loginPanel.add(Box.createVerticalStrut(20));
+        loginPanel.add(panel3);
     }
     
     private static void setupPanels() {
@@ -425,8 +461,10 @@ class UserInterface extends JFrame implements ActionListener {
     	signOutButton.addActionListener(UI);
         dashboardPanel.add(Box.createVerticalStrut(5));
         dashboardPanel.add(userInformation);
+        dashboardPanel.add(Box.createVerticalStrut(10));
     	dashboardPanel.add(signOutButton);
     	
+    	// Other panels
     	setupSearchPanel();
         setupLeasePanel();
         setupPaymentsPanel();
@@ -442,15 +480,33 @@ class UserInterface extends JFrame implements ActionListener {
     
     private static void setupLeasePanel() {
     	leasePanel = new JPanel();
-    	leaseInfos = new ArrayList<JTextField>();
-    	JLabel leaseTitle = new JLabel("Leases");
-    	leaseTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         BoxLayout leaseLayout = new BoxLayout(leasePanel, BoxLayout.Y_AXIS);
         leasePanel.setLayout(leaseLayout);
+    	leaseInfos = new ArrayList<JTextField>();
+    	JLabel leaseTitle = new JLabel("Leases");
+    	JLabel applyForLeaseTitle = new JLabel("Fill out info to apply for lease: ");
+    	roommatestxtField = new JTextField("Roommates");
+    	apartmentIDtxtField = new JTextField("Apartment/House ID");
+    	leaseOptiontxtField = new JTextField("Lease Option");
+    	applyForLeaseButton = new JButton("Apply");
+    	applyForLeaseButton.addActionListener(UI);
+    	leaseTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         leasePanel.add(Box.createVerticalStrut(10));
     	leasePanel.add(leaseTitle);
         leasePanel.add(Box.createVerticalStrut(10));
         leasePanel.add(dashboardButton);
+        leasePanel.add(Box.createVerticalStrut(10));
+        leasePanel.add(applyForLeaseTitle);
+        leasePanel.add(Box.createVerticalStrut(5));
+        leasePanel.add(roommatestxtField);
+        leasePanel.add(Box.createVerticalStrut(5));
+        leasePanel.add(apartmentIDtxtField);
+        leasePanel.add(Box.createVerticalStrut(5));
+        leasePanel.add(leaseOptiontxtField);
+        leasePanel.add(Box.createVerticalStrut(5));
+        leasePanel.add(applyForLeaseButton);
+        leasePanel.add(Box.createVerticalStrut(10));
+        leasePanel.add(new JLabel("Your Leases: "));
 		leaseInfoPanel = new JPanel();
         BoxLayout infoLayout = new BoxLayout(leaseInfoPanel, BoxLayout.Y_AXIS);
         leaseInfoPanel.setLayout(infoLayout);
@@ -465,6 +521,12 @@ class UserInterface extends JFrame implements ActionListener {
         searchTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         searchPanel.add(Box.createVerticalStrut(10));
         searchPanel.add(searchTitle);
+        searchPanel.add(Box.createVerticalStrut(10));
+        searchPanel.add(Box.createVerticalStrut(10));
+        JButton tempDashboardButton = new JButton("Dashboard");
+        tempDashboardButton.addActionListener(UI);
+        tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        searchPanel.add(tempDashboardButton);
         searchPanel.add(Box.createVerticalStrut(10));
         JPanel optionsPanel = new JPanel();
         optionsPanel.setLayout(layout2);
@@ -505,12 +567,6 @@ class UserInterface extends JFrame implements ActionListener {
         searchPanel.add(Box.createVerticalStrut(10));
         searchPanel.add(searchButton);
         searchPanel.add(Box.createVerticalStrut(10));
-        // Had some issues with adding the dashboard button, so this is a fix
-        JButton tempDashboardButton = new JButton("Dashboard");
-        tempDashboardButton.addActionListener(UI);
-        tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        searchPanel.add(tempDashboardButton);
-        searchPanel.add(Box.createVerticalStrut(10));
     }
     
     private static void setupPaymentsPanel() {
@@ -520,6 +576,13 @@ class UserInterface extends JFrame implements ActionListener {
         paymentsPanel.setLayout(paymentsLayout);
         JLabel paymentsTitle = new JLabel("Payments");
         paymentsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        billIDtxtField = new JTextField("Bill ID");
+        billIDtxtField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        amounttxtField = new JTextField("00.00");
+        amounttxtField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        payBillButton = new JButton("Pay Bill");
+        payBillButton.addActionListener(UI);
+        payBillButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         paymentsPanel.add(Box.createVerticalStrut(10));
         paymentsPanel.add(paymentsTitle);
         paymentsPanel.add(Box.createVerticalStrut(10));
@@ -528,7 +591,12 @@ class UserInterface extends JFrame implements ActionListener {
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         paymentsPanel.add(tempDashboardButton);
         paymentsPanel.add(Box.createVerticalStrut(10));
-    	// Initializations
+        paymentsPanel.add(billIDtxtField);
+        //paymentsPanel.add(Box.createVerticalStrut(5)); Commented out because Database.java doesn't require a payment amount
+        //paymentsPanel.add(amounttxtField);
+        paymentsPanel.add(Box.createVerticalStrut(5));
+        paymentsPanel.add(payBillButton);
+        paymentsPanel.add(Box.createVerticalStrut(10));
     	paymentsInfoStrings = new ArrayList<String>();
     	paymentInfos = new ArrayList<JTextField>();
     	paymentIDField = new JTextField();
@@ -602,15 +670,18 @@ class UserInterface extends JFrame implements ActionListener {
         panel1.add(createLeaseRoomates);
         panel1.add(createLeaseOptionsLabel);
         panel1.add(createLeaseOptions);
-        createLeasePanel.add(createLeaseTitle);
-        createLeasePanel.add(panel1);
         makeLeaseButton = new JButton("Make Lease");
         makeLeaseButton.addActionListener(UI);
         makeLeaseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createLeasePanel.add(makeLeaseButton);
         JButton tempDashboardButton = new JButton("Dashboard");
         tempDashboardButton.addActionListener(UI);
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createLeasePanel.add(createLeaseTitle);
+        createLeasePanel.add(Box.createVerticalStrut(10));
+        createLeasePanel.add(panel1);
+        createLeasePanel.add(Box.createVerticalStrut(10));
+        createLeasePanel.add(makeLeaseButton);
+        createLeasePanel.add(Box.createVerticalStrut(10));
         createLeasePanel.add(tempDashboardButton);
     }
     
@@ -625,24 +696,26 @@ class UserInterface extends JFrame implements ActionListener {
     	JLabel leaseIDLabel = new JLabel("Lease ID: ");
     	checkUserIDField = new JTextField("");
     	checkLeaseIDField = new JTextField("");
-    	informationArea = new JTextArea("Information will be displayed here.");
+    	informationArea = new JTextArea(10, 20);
+    	informationArea.setText("User info will be here.");
     	informationPanel = new JPanel();
     	fieldsPanel.add(userIDLabel);
     	fieldsPanel.add(checkUserIDField);
     	fieldsPanel.add(leaseIDLabel);
     	fieldsPanel.add(checkLeaseIDField);
+    	checkUserButton_ = new JButton("Check The User");
+    	checkUserButton_.addActionListener(UI);
+    	checkUserButton_.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	leaseHistoryButton = new JButton("Check History");
+    	leaseHistoryButton.addActionListener(UI);
+    	leaseHistoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	checkUserPanel.add(checkUserTitle);
     	checkUserPanel.add(Box.createVerticalStrut(10));
     	checkUserPanel.add(fieldsPanel);
     	checkUserPanel.add(Box.createVerticalStrut(10));
-    	checkUserButton_ = new JButton("Check The User");
-    	checkUserButton_.addActionListener(UI);
-    	checkUserButton_.setAlignmentX(Component.CENTER_ALIGNMENT);
     	checkUserPanel.add(checkUserButton_);
-    	checkLeaseButton = new JButton("Check Lease");
-    	checkLeaseButton.addActionListener(UI);
-    	checkLeaseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    	checkUserPanel.add(checkLeaseButton);
+    	checkUserPanel.add(Box.createVerticalStrut(10));
+    	checkUserPanel.add(leaseHistoryButton);
         JButton tempDashboardButton = new JButton("Dashboard");
     	tempDashboardButton.addActionListener(UI);
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -657,7 +730,7 @@ class UserInterface extends JFrame implements ActionListener {
     	contractModificationPanel.setLayout(new BoxLayout(contractModificationPanel, BoxLayout.Y_AXIS));
     	JPanel fieldsPanel = new JPanel();
     	fieldsPanel.setLayout(new GridLayout(3,2));
-    	JLabel contractModificationTitle = new JLabel("Check a User or Lease");
+    	JLabel contractModificationTitle = new JLabel("Modify Contracts");
     	contractModificationTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
     	JLabel userIDLabel = new JLabel("User ID: ");
     	JLabel apartmentIDLabel = new JLabel("Apartment ID: ");
@@ -671,18 +744,24 @@ class UserInterface extends JFrame implements ActionListener {
     	fieldsPanel.add(contractApartmentIDField);
     	fieldsPanel.add(houseIDLabel);
     	fieldsPanel.add(contractHouseIDField);
+    	earlyTerminationButton = new JButton("Early Termination");
+    	earlyTerminationButton.addActionListener(UI);
+    	earlyTerminationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	terminateContractButton = new JButton("Terminate Contract");
+    	terminateContractButton.addActionListener(UI);
+    	terminateContractButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	lateContractButton = new JButton("Add Late Fee");
+    	lateContractButton.addActionListener(UI);
+    	lateContractButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	contractModificationPanel.add(contractModificationTitle);
     	contractModificationPanel.add(Box.createVerticalStrut(10));
     	contractModificationPanel.add(fieldsPanel);
     	contractModificationPanel.add(Box.createVerticalStrut(10));
-    	earlyTerminationButton = new JButton("Early Termination");
-    	earlyTerminationButton.addActionListener(UI);
-    	earlyTerminationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	contractModificationPanel.add(earlyTerminationButton);
-    	terminateContractButton = new JButton("Terminate Contract");
-    	terminateContractButton.addActionListener(UI);
-    	terminateContractButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	contractModificationPanel.add(Box.createVerticalStrut(10));
     	contractModificationPanel.add(terminateContractButton);
+    	contractModificationPanel.add(Box.createVerticalStrut(10));
+    	contractModificationPanel.add(lateContractButton);
         JButton tempDashboardButton = new JButton("Dashboard");
     	tempDashboardButton.addActionListener(UI);
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -699,23 +778,62 @@ class UserInterface extends JFrame implements ActionListener {
         JButton tempDashboardButton = new JButton("Dashboard");
     	tempDashboardButton.addActionListener(UI);
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    	manageInventoryPanel.add(Box.createVerticalStrut(10));
-    	manageInventoryPanel.add(tempDashboardButton);
-        addInventoryButton = new JButton("Add Inventory");
+        addHouseButton = new JButton("Add House");
+        addApartmentButton = new JButton("Add Apartment");
         deleteInventoryButton = new JButton("Delete Inventory");
         updateInventoryButton = new JButton("Update Inventory");
-    	addInventoryButton.addActionListener(UI);
+    	addHouseButton.addActionListener(UI);
+    	addApartmentButton.addActionListener(UI);
     	deleteInventoryButton.addActionListener(UI);
     	updateInventoryButton.addActionListener(UI);
-    	addInventoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	miHouseIDField = new JTextField("House ID");
+    	miBedroomsField = new JTextField("Bedrooms");
+    	miBathroomsField = new JTextField("Bathrooms");
+    	miPriceField = new JTextField("00.00");
+    	miLocationField = new JTextField("Location");
+    	miApartmentIDField = new JTextField("Apartment ID");
+    	miApartmentNumberField = new JTextField("Apartment Number");
+    	miBuildingIDField = new JTextField("Building ID");
+    	addHouseButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    	addApartmentButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	deleteInventoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	updateInventoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
-    	manageInventoryPanel.add(addInventoryButton);
+    	manageInventoryPanel.add(tempDashboardButton);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(miApartmentIDField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(miApartmentNumberField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(miBuildingIDField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(miHouseIDField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(miBedroomsField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(miBathroomsField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(miPriceField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(miLocationField);
+    	manageInventoryPanel.add(Box.createVerticalStrut(5));
+    	manageInventoryPanel.add(addHouseButton);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    	manageInventoryPanel.add(addApartmentButton);
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
     	manageInventoryPanel.add(deleteInventoryButton);
     	manageInventoryPanel.add(Box.createVerticalStrut(10));
     	manageInventoryPanel.add(updateInventoryButton);
+    	manageInventoryPanel.add(Box.createVerticalStrut(10));
+    }
+    
+    private static void resetmiFields() {
+    	miHouseIDField.setText("House ID");
+    	miBedroomsField.setText("Bedrooms");
+    	miBathroomsField.setText("Bathrooms");
+    	miPriceField.setText("00.00");
+    	miLocationField.setText("Location");
+    	miApartmentIDField.setText("Apartment ID");
     }
     
     private static void setupGenerateReportsPanel() {
@@ -729,13 +847,93 @@ class UserInterface extends JFrame implements ActionListener {
     	tempDashboardButton.addActionListener(UI);
         tempDashboardButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         generateReportsPanel.add(tempDashboardButton);
-    	reportsTextArea = new JTextArea("[Generated Report]");
+    	reportsTextArea = new JTextArea(15,30);
     	reportsTextArea.setEditable(false);
     	generateReportsPanel.add(Box.createVerticalStrut(10));
-    	generateReportsPanel.add(reportsTextArea);
+        JScrollPane scroll3 = new JScrollPane(reportsTextArea);
+        scroll3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        generateReportsPanel.add(scroll3);
+        applicationsButton = new JButton("View Applications");
+        applicationsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        applicationsButton.addActionListener(UI);
+    	applicationsTextArea = new JTextArea(15,30);
+    	applicationsTextArea.setEditable(false);
+    	generateReportsPanel.add(Box.createVerticalStrut(10));
+        generateReportsPanel.add(applicationsButton);
+    	generateReportsPanel.add(Box.createVerticalStrut(10));
+        JScrollPane scroll4 = new JScrollPane(applicationsTextArea);
+        scroll4.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        generateReportsPanel.add(scroll4);
     }
     
     private static void updateGenerateReportsPanel() {
+    	try {
+			reportInfo = Database.GenReport();
+			reportsTextArea.setText("");
+			reportsTextArea.append("Generated Report:");
+			int i = 0;
+			for (String string : reportInfo) {
+				switch (i) {
+				case 0:
+					reportsTextArea.append("\n\nLocation ID: " + string);
+					break;
+				case 1:
+					reportsTextArea.append("\nLocation Name: " + string);
+					break;
+				case 2:
+					reportsTextArea.append("\nRevenue: " + string);
+					i = -1;
+					break;
+				default:
+					break;
+				}
+				i++;
+			}
+		} catch (Exception e) {
+			System.out.println("Unable to print a report.");
+		}
+    	generateReportsPanel.revalidate();
+    	generateReportsPanel.repaint();
+    }
+    
+    private static void updateViewApplications() {
+    	try {
+			ArrayList<String> newList = Database.viewAllApplications();
+			applicationsTextArea.setText("");
+			applicationsTextArea.append("Applications:");
+			int i = 0;
+			for (String string : newList) {
+				switch (i) {
+				case 0:
+					applicationsTextArea.append("\n\nApplication ID: " + string);
+					break;
+				case 1:
+					applicationsTextArea.append("\nMain User ID: " + string);
+					break;
+				case 2:
+					applicationsTextArea.append("\nIncome: " + string);
+					break;
+				case 3:
+					applicationsTextArea.append("\nApartment ID: " + string);
+					break;
+				case 4:
+					applicationsTextArea.append("\nHouse ID: " + string);
+					break;
+				case 5:
+					applicationsTextArea.append("\nApplication Status: " + string);
+					break;
+				case 6:
+					applicationsTextArea.append("\nLease Options: " + string);
+					i = -1;
+					break;
+				default:
+					break;
+				}
+				i++;
+			}
+		} catch (Exception e) {
+			System.out.println("Unable to view applications.");
+		}
     	generateReportsPanel.revalidate();
     	generateReportsPanel.repaint();
     }
@@ -746,13 +944,14 @@ class UserInterface extends JFrame implements ActionListener {
     }
     
     private static void updatePaymentsPanel() {
-    	//TODO: Query the database for the user's leases.
+    	JTextField defaultResult = new JTextField("No bills yet.");
+    	defaultResult.setEditable(false);
     	for (Component c : paymentsInfoPanel.getComponents()) {
     		paymentsInfoPanel.remove(c);
     	}
     	if (paymentInfos.isEmpty()) {
             paymentsInfoPanel.add(Box.createVerticalStrut(10));
-    		paymentsInfoPanel.add(new JTextField("No payments/leases yet."));
+    		paymentsInfoPanel.add(defaultResult);
             paymentsPanel.add(paymentsInfoPanel);
         	paymentsPanel.revalidate();
         	paymentsPanel.repaint();
@@ -766,7 +965,6 @@ class UserInterface extends JFrame implements ActionListener {
 				paymentsInfoPanel.add(textField);
 			}
 		} catch (Exception e) {
-			// dw about this
 			e.printStackTrace();
 		}
     	paymentsPanel.revalidate();
@@ -774,7 +972,6 @@ class UserInterface extends JFrame implements ActionListener {
     }
     
     private static void updateLeasePanel() {
-    	//TODO: Query the database for the user's leases.
     	for (Component c : leaseInfoPanel.getComponents()) {
     		leaseInfoPanel.remove(c);
     	}
@@ -797,64 +994,72 @@ class UserInterface extends JFrame implements ActionListener {
     }
     
     private static void displaySearchResults() {
-    	for (String string : leaseInfoStrings) {
-			int PIDInt = Integer.parseInt(string);
-			ArrayList<String> tempList = new ArrayList<String>();
-			try {
-				tempList = Database.propertyDetails(PIDInt, 0);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			int i = 0;
-			for (String displayThing : tempList) {
-				i++;
-				if (displayThing == null)
-					displayThing = "";
-				switch (i) {
-				case 1:
-					apartmentInfo.append("\nApartmentID: " + displayThing);
-					break;
-				case 2:
-					apartmentInfo.append("\nLocation: " + displayThing);
-					break;
-				case 3:
-					apartmentInfo.append("\nApartment Number: " + displayThing);
-					break;
-				case 4:
-					apartmentInfo.append("\nBuildingID: " + displayThing);
-					break;
-				case 5:
-					apartmentInfo.append("\nBedrooms: " + displayThing);
-					break;
-				case 6:
-					apartmentInfo.append("\nBathrooms: " + displayThing);
-					break;
-				case 7:
-					apartmentInfo.append("\nPrice: " + displayThing);
-					break;
-				case 8:
-					apartmentInfo.append("\nLease Options: " + displayThing);
-					i = 0;
-					break;
-				}
-			}
-    	}
-
+        apartmentInfo = new JTextArea(15,30);
+        apartmentInfo.append("Results: ");
+    	for (String string : resultStrings) {
+            int PIDInt = Integer.parseInt(string);
+            ArrayList<String> tempList = new ArrayList<String>();
+            try {
+                tempList = Database.propertyDetails(PIDInt, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            int i = 0;
+            for (String displayThing : tempList) {
+                i++;
+                if (displayThing == null)
+                    displayThing = "";
+                switch (i) {
+                case 1:
+                    apartmentInfo.append("\nApartmentID: " + displayThing);
+                    break;
+                case 2:
+                    apartmentInfo.append("\nLocation: " + displayThing);
+                    break;
+                case 3:
+                    apartmentInfo.append("\nApartment Number: " + displayThing);
+                    break;
+                case 4:
+                    apartmentInfo.append("\nBuildingID: " + displayThing);
+                    break;
+                case 5:
+                    apartmentInfo.append("\nBedrooms: " + displayThing);
+                    break;
+                case 6:
+                    apartmentInfo.append("\nBathrooms: " + displayThing);
+                    break;
+                case 7:
+                    apartmentInfo.append("\nPrice: " + displayThing);
+                    break;
+                case 8:
+                    apartmentInfo.append("\nLease Options: " + displayThing + "\n");
+                    i = 0;
+                    break;
+                }
+            }
+        }
         if (!hasSearched) {
             resultsPanel = new JPanel();
-            //apartmentInfo = new JTextArea("Nothing found.");
             apartmentInfo.setEditable(false);
+            searchPanel.add(resultsPanel);
+            apartmentIDField = new JTextField("ID");
+            searchPanel.add(Box.createVerticalStrut(10));
+            searchPanel.add(apartmentIDField);
+            searchPanel.add(Box.createVerticalStrut(10));
+            checkApartmentButton = new JButton("Details");
+            checkApartmentButton.addActionListener(UI);
+            checkApartmentButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            searchPanel.add(checkApartmentButton);
+            hasViewedDetails = false;
         }
-        
         for (Component c : resultsPanel.getComponents()) {
             resultsPanel.remove(c);
         }
-        resultsPanel.add(apartmentInfo);
-        // and for now...
-        if (!hasSearched) {
-            searchPanel.add(resultsPanel);
-        }
+        scroll = new JScrollPane(apartmentInfo);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        resultsPanel.add(scroll);
+        //resultsPanel.add(apartmentInfo);
+        resultsPanel.add(scroll);
         resultsPanel.revalidate();
         resultsPanel.repaint();
         searchPanel.revalidate();
@@ -864,6 +1069,32 @@ class UserInterface extends JFrame implements ActionListener {
         hasSearched = true;
     }
       
+    private static void displayApartmentInfo() {
+        apartmentDetailstxtArea = new JTextArea(15,30);
+        apartmentDetailstxtArea.append("Information: ");
+    	for (String string : detailStrings) {
+            apartmentDetailstxtArea.append("\n" + string);
+        }
+        if (!hasViewedDetails) {
+            detailsPanel = new JPanel();
+            apartmentDetailstxtArea.setEditable(false);
+            searchPanel.add(detailsPanel);
+        }
+        for (Component c : detailsPanel.getComponents()) {
+        	detailsPanel.remove(c);
+        }
+        scroll2 = new JScrollPane(apartmentDetailstxtArea);
+        scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        detailsPanel.add(scroll2);
+        detailsPanel.revalidate();
+        detailsPanel.repaint();
+        searchPanel.revalidate();
+        searchPanel.repaint();
+        mainPanel.revalidate();
+        mainPanel.repaint();
+        hasViewedDetails = true;
+    }
+    
     public void actionPerformed(ActionEvent e) 
     { 
         String s = e.getActionCommand(); 
@@ -915,8 +1146,6 @@ class UserInterface extends JFrame implements ActionListener {
         }
         
         if (s.equals("Generate Reports")) {
-        	// TODO: Generate reports
-        	reportsTextArea.setText("[Generated Report]");
         	updateGenerateReportsPanel();
         	displayGenerateReports();
         }
@@ -925,36 +1154,219 @@ class UserInterface extends JFrame implements ActionListener {
          * Not-Dashboard Buttons
          */
         
-        if (s.equals("Make Payment")) {
-        	// TODO: make an SQL payment thing
+        if (s.equals("View Applications")) {
+        	updateViewApplications();
+        }
+        
+        if (s.equals("Early Termination")) {
+        	try {
+				Database.REarlyT(Integer.parseInt(contractUserIDField.getText()), Integer.parseInt(contractApartmentIDField.getText()), Integer.parseInt(contractHouseIDField.getText()));
+			} catch (Exception e2) {
+				System.out.println("Early termination failed.");
+			}
+        }
+        
+        if (s.equals("Terminate Contract")) {
+        	try {
+				Database.terminateContract(Integer.parseInt(contractUserIDField.getText()), Integer.parseInt(contractApartmentIDField.getText()), Integer.parseInt(contractHouseIDField.getText()));
+			} catch (Exception e2) {
+				System.out.println("Contract termination failed.");
+			}
+        }
+        
+        if (s.equals("Make Lease")) {
+        	try {
+				Database.CLease(Integer.parseInt(createLeaseUserID.getText()),Integer.parseInt(createLeaseApartmentID.getText()),Integer.parseInt(createLeaseHouseID.getText()), new ArrayList<Integer>(0),createLeaseOptions.getText());
+			} catch (Exception e2) {
+				System.out.println("Failed to make lease.");
+			}
+        }
+        
+        if (s.equals("Add Late Fee")) {
+        	try {
+				Database.AddLFees(Integer.parseInt(contractUserIDField.getText()), Integer.parseInt(contractApartmentIDField.getText()), Integer.parseInt(contractHouseIDField.getText()));
+			} catch (Exception e2) {
+				System.out.println("Failed to add late fees.");
+			}
+        }
+        
+        if (s.equals("Apply")) {
+        	try {
+        		// don't know where UserID's supposed to come from
+        		// don't know an array of integers for roommates is coming from
+        		// don't know where income is coming from
+				Database.applicationRequest(1, new ArrayList<Integer>(), 1000, Integer.parseInt(apartmentIDtxtField.getText()), Integer.parseInt(apartmentIDtxtField.getText()), leaseOptiontxtField.getText());
+			} catch (Exception e2) {
+		    	roommatestxtField.setText("Roommates");
+		    	apartmentIDtxtField.setText("Apartment/House ID");
+		    	leaseOptiontxtField.setText("Lease Option");
+			}
+        }
+        
+        if (s.equals("Pay Bill")) {
+        	try {
+				Database.PayDues(Integer.parseInt(billIDtxtField.getText()));
+			} catch (Exception e2) {
+				System.out.println("Unable to pay bill.");
+			}
         }
         
         if (s.equals("Make Review")) {
-        	// TODO: send a review to the SQL thing
+        	try {
+        		// don't know where userID is to come from
+				Database.AddReview(Integer.parseInt(reviewIDField.getText()), Integer.parseInt(reviewIDField.getText()), Integer.parseInt(reviewScoreField.getText()), 1);
+			} catch (Exception e2) {
+				System.out.println("Review submission failed.");
+			}
         }
         
-        if (s.equals("Add Inventory")) {
-        	// TODO
+        if (s.equals("Add Apartment")) {
+        	try {
+        		ArrayList<String> temp = new ArrayList<String>();
+        		temp.add(miApartmentIDField.getText());
+        		temp.add(miApartmentNumberField.getText());
+        		temp.add(miBedroomsField.getText());
+        		temp.add(miBathroomsField.getText());
+        		temp.add(miPriceField.getText());
+        		temp.add(miLocationField.getText());
+        		Database.addApartment(temp);
+        		resetmiFields();
+			} catch (Exception e2) {
+	        	System.out.println("Unable to add apartment.");
+			}
+        }
+        
+        if (s.equals("Add House")) {
+        	try {
+        		ArrayList<String> temp = new ArrayList<String>();
+        		temp.add(miHouseIDField.getText());
+        		temp.add(miBedroomsField.getText());
+        		temp.add(miBathroomsField.getText());
+        		temp.add(miPriceField.getText());
+        		temp.add(miLocationField.getText());
+        		Database.addHouse(temp);
+        		resetmiFields();
+			} catch (Exception e2) {
+	        	System.out.println("Unable to add house.");
+			}
         }
         
         if (s.equals("Delete Inventory")) {
-        	// TODO
+        	try {
+        		Database.updateListing(Integer.parseInt(miApartmentIDField.getText()), Integer.parseInt(miHouseIDField.getText()), Double.parseDouble(miPriceField.getText())); 
+        		resetmiFields();
+			} catch (Exception e2) {
+	        	System.out.println("Unable to delete inventory.");
+			}
         }
         
         if (s.equals("Update Inventory")) {
-        	// TODO
+        	try {
+        		Database.deleteListing(Integer.parseInt(miApartmentIDField.getText()), Integer.parseInt(miHouseIDField.getText()));
+        		resetmiFields();
+			} catch (Exception e2) {
+	        	System.out.println("Unable to update inventory.");
+			}
         }
         
         if (s.equals("Check The User")) {
-        	// TODO
-        	informationArea.setText("Checked User: ");
+        	try {
+        		String userIDString = checkUserIDField.getText();
+        		int userID = 0;
+        		try {
+            		userID = Integer.parseInt(userIDString);
+        		} catch (Exception e4) {
+        		}
+        		informationArea.setText("");
+        		ArrayList<String> result = new ArrayList<String>();
+            	result = Database.CheckDues(userID);
+            	informationArea.append("Results: \n");
+        		int i = 0;
+        		for (String string : result) {
+        			String totalString = "";
+        			switch (i) {
+					case 0:
+						totalString = "\nBill ID: " + string;
+						break;
+					case 1:
+						totalString = "\nBill Type: " + string;
+						break;
+					case 2:
+						totalString = "\nPayment Status: " + string;
+						break;
+					case 3:
+						totalString = "\nPenalty Fee: " + string;
+						break;
+					case 4:
+						totalString = "\nUser ID: " + string + "\n";
+						i = -1;
+						break;
+					default:
+						break;
+					}
+        			i++;
+        			informationArea.append(totalString);
+        		}
+        	} catch (Exception e2) {
+        		e2.printStackTrace();
+        		informationArea.setText("No data found.");
+        	}
         	updateCheckUserPanel();
         }
         
-        if (s.equals("Check Lease")) {
-        	// TODO
-        	informationArea.setText("Checked Lease: ");
+        if (s.equals("Check History")) {
+        	try {
+        		informationArea.setText("");
+				historyInformation = new ArrayList<String>();
+        		int userID = 0;
+        		try {
+            		userID = Integer.parseInt(checkUserIDField.getText());
+        		} catch (Exception e4) {
+        		}
+				historyInformation = Database.ChHistory(userID);
+            	informationArea.append("History: \n");
+        		int i = 0;
+        		for (String string : historyInformation) {
+        			String totalString = "";
+        			switch (i) {
+					case 0:
+						totalString = "\nLease: " + string;
+						break;
+					case 1:
+						totalString = "\n " + string;
+						break;
+					case 2:
+						totalString = "" + string;
+						i = -1;
+						break;
+					default:
+						break;
+					}
+        			informationArea.append(totalString);
+        			i++;
+        		}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				System.out.println("Check history failed.");
+			}
         	updateCheckUserPanel();
+        }
+        
+        if (s.equals("Details")) {
+        	try {
+        		detailStrings = new ArrayList<String>();
+        		try {
+        			detailStrings = Database.ViewHA(Integer.parseInt(apartmentIDField.getText()),Integer.parseInt(apartmentIDField.getText()));
+				} catch (Exception e2) {
+					if (Database.isOffline) {
+						detailStrings = Database.ViewHA(1,1);
+					}
+				}
+        	} catch (Exception e3) {
+        		e3.printStackTrace();
+        		System.out.println("Failed to find details of house/apartment: " + apartmentIDField.getText());
+        	}
+        	displayApartmentInfo();
         }
         
         /*
@@ -962,10 +1374,8 @@ class UserInterface extends JFrame implements ActionListener {
          */
         
         if (s.equals("Search")) {
-        	// TODO: show up (5? 3? idk?) results as a textarea
-        	// TODO: get the itemEvent for the JRadios and store them as an int
         	try {
-            	leaseInfoStrings = Database.Search(Integer.parseInt(bedroomsField.getText()), Integer.parseInt(bathroomsField.getText()), Float.parseFloat(priceField.getText()), 0);
+            	resultStrings = Database.Search(Integer.parseInt(bedroomsField.getText()), Integer.parseInt(bathroomsField.getText()), Float.parseFloat(priceField.getText()), 0);
 			} catch (Exception e2) {
 				System.out.println("Search failed");
 			}
@@ -978,7 +1388,7 @@ class UserInterface extends JFrame implements ActionListener {
         
         if (s.equals("Signup")) {
         	ArrayList<String> signupData = new ArrayList<String>();
-            signupUsername = signupUsernametxtField.getText();
+            signupAddress = signupAddresstxtField.getText();
             signupPassword = signupPasswordtxtField.getText();
             signupFirstName = signupFirstNametxtField.getText();
             signupLastName = signupLastNametxtField.getText();
@@ -994,43 +1404,53 @@ class UserInterface extends JFrame implements ActionListener {
             signupData.add(signupCity);
             signupData.add(signupState);
             signupData.add(signupZip);
-            signupData.add(signupUsername);
+            signupData.add(signupAddress);
             signupData.add(signupPassword);
             try {
 				Database.Registration(signupData);
-	            userMessage.setText("Signed up! Proceed with login using Username: " + signupUsername + " and Password: " + signupPassword);
+	            userMessage.setText("Signed up! Proceed with login using Email: " + signupEmail + " and Password: " + signupPassword);
 			} catch (Exception e1) {
 	            userMessage.setText("Sign up failed.");
 			}
         }
         
         if (s.equals("Login")) { 
+        	Boolean success = true;
             System.out.print("Submitting login...");
-            username = usernametxtField.getText();
+            email = emailtxtField.getText();
             password = new String(passwordtxtField.getPassword()); // Passwords are stored as a char[]
-            System.out.println("\nUsername: " + username + "\nPass: " + password);
+            System.out.println("\nEmail: " + email + "\nPass: " + password);
             userMessage.setText("Logging in...");
         	try {
-				//if (Database.Login(username, password))
+        		if (demoCheckBox.isSelected()) {
+        			Database.isOffline = true;
+        		}
+				if (Database.Login(email, password))
 					isLoggedIn = true;
+				success = true;
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				success = false;
+				//e1.printStackTrace();
 			}
-            if (username.equals("admin") && password.equals("pass")) {
+            if (email.equals("admin") && password.equals("pass")) {
             	isAdmin = true;
             }
-            setupPanels();
-            // TODO:
-            // ChHistory?
-            // ChLease?
-            // ChBalance?
-            // then change userInformation's text data to that?
-        	displayDashboard();
-            System.out.println("Logged in");
-            // else if (database is down)
-            userMessage.setText("The database is down, please try again later.");
-            // else
-            userMessage.setText("Login failed.");
+        	if (success) {
+        		setupPanels();
+        		try {
+                    //userInformation.setText("Balance: "+Database.ChBalance(001,1,1));
+        			// commented out because Database.java doesn't really have a user information functionality
+        			userInformation.setText("Welcome to UNF Apartments.");
+        			if (isAdmin) {
+        				userInformation.append("\nYou are an admin.");
+        			}
+        		} catch (Exception e2) {
+        		}
+            	displayDashboard();
+                System.out.println("Logged in");
+        	} else {
+                userMessage.setText("Login failed.");
+        	}
         } 
     } 
 }
